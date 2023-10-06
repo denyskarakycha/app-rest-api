@@ -63,10 +63,12 @@ exports.login = async (req, res, next) => {
     );
 
     res.status(200).json({ token: token, userId: user._id.toString() });
+    return;
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;
     }
     next(error);
+    return error;
   }
 };
