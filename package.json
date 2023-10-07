@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Creating first rest API",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "mocha --timeout 10000",
     "start": "nodemon app.js"

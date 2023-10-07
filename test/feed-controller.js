@@ -1,11 +1,10 @@
-const expect = require("chai").expect;
-const sinon = require("sinon");
-const mongoose = require("mongoose");
-const io = require("../socket.js");
+import { expect } from "chai";
+import sinon from 'sinon';
+import mongoose from 'mongoose';
+import webSocket from '../socket.js';
 
-const Post = require('../models/post');
-const User = require("../models/user");
-const feedController = require("../controllers/feed.js");
+import User from "../models/user.js";
+import { createPost, getStatus} from '../controllers/feed.js'
 
 const MONGODB_URI =
   "mongodb+srv://denys:295q6722822@cluster0.fk2cpgo.mongodb.net/test?retryWrites=true&w=majority";
@@ -47,16 +46,16 @@ describe("Feed controller", function () {
         json: function() {}
     };
 
-    sinon.stub(io, 'getIO')
-    io.getIO.returns({
+    sinon.stub(webSocket, 'getIO')
+    webSocket.getIO.returns({
       emit: function() {}
     });
 
-    feedController.createPost(req, res, () => {})
+    createPost(req, res, () => {})
         .then((savedUser) => {
             expect(savedUser).to.have.property('posts');
             expect(savedUser.posts).to.have.length(1);
-            io.getIO.restore();
+            webSocket.getIO.restore();
             done();
         })
   })
@@ -74,9 +73,8 @@ describe("Feed controller", function () {
         this.userStatus = obj.status;
       },
     };
-    feedController.getStatus(req, res, () => {})
-      .then(() => {
-        
+    getStatus(req, res, () => {})
+      .then(() => {       
         expect(res.statusCode).to.be.equal(200);
         expect(res.userStatus).to.be.equal("I am new");
         done();

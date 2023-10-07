@@ -1,7 +1,7 @@
-const { Server } = require('socket.io');
+import { Server } from 'socket.io';
 let io;
 
-module.exports = {
+const webSocket = {
     init: httpServer => {
        io = new Server(httpServer);
        return io;
@@ -13,3 +13,5 @@ module.exports = {
         return io;
     }
 };  
+
+export default webSocket;

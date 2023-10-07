@@ -1,12 +1,27 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const path = require('path');
-const multer = require('multer');
-const { v4: uuidv4 } = require('uuid');
+import express from 'express';
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import multer from 'multer';
+import { v4 as uuidv4 } from 'uuid';
 
-const feedRoutes = require('./router/feed.js');
-const authRoutes = require('./router/auth.js');
+import feedRoutes from './router/feed.js';
+import authRoutes from './router/auth.js';
+
+import webSocket from './socket.js';
+
+// const express = require('express');
+// const bodyParser = require('body-parser');
+// const mongoose = require('mongoose');
+// const path = require('path');
+// const multer = require('multer');
+// const { v4: uuidv4 } = require('uuid');
+// const feedRoutes = require('./router/feed.js');
+// const authRoutes = require('./router/auth.js');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const MONGODB_URI =
   "mongodb+srv://denys:295q6722822@cluster0.fk2cpgo.mongodb.net/messages?retryWrites=true&w=majority";
@@ -57,7 +72,7 @@ app.use((error, req, res, next) => {
 mongoose.connect(MONGODB_URI)
     .then(result => {
       const server = app.listen(8080);
-      const io = require('./socket.js').init(server);   
+      const io = webSocket.init(server);
       io.on('connection', socket => {
         console.log('connect');
       });

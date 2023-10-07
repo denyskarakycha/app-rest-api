@@ -1,32 +1,44 @@
-const express = require('express');
-const { body } = require('express-validator');
+import { Router } from 'express';
+import { body } from 'express-validator';
+// const { body } = require('express-validator');
 
-const feedController = require('../controllers/feed.js');
-const isAuth = require('../middleware/is-auth.js');
+import {
+    getPosts,
+    createPost,
+    getPost,
+    updatePost,
+    deletePost,
+    getStatus,
+    updateStatus
+} from '../controllers/feed.js'
+// const feedController = require('../controllers/feed.js');
 
-const router = express.Router();
+import isAuth from '../middleware/is-auth.js'
+// const isAuth = require('../middleware/is-auth.js');
+
+const router = Router();
 // GET /feed/posts
-router.get('/posts', isAuth, feedController.getPosts);
+router.get('/posts', isAuth, getPosts);
 
 // POST /feed/post
 router.post('/post', isAuth, [
     body('title').trim().isLength({min: 5}),
     body('content').trim().isLength({min: 5})
-], feedController.createPost);
+], createPost);
 
-router.get('/post/:postId', feedController.getPost);
+router.get('/post/:postId', getPost);
 
 // PUT
 router.put('/post/:postId', isAuth, [
     body('title').trim().isLength({min: 5}),
     body('content').trim().isLength({min: 5})
-], feedController.updatePost);
+], updatePost);
 
 // DELETE
-router.delete('/post/:postId', isAuth, feedController.deletePost)
+router.delete('/post/:postId', isAuth, deletePost)
 
-router.get('/status', isAuth, feedController.getStatus);
+router.get('/status', isAuth, getStatus);
 
-router.put('/status', isAuth, feedController.updateStatus);
+router.put('/status', isAuth, updateStatus);
 
-module.exports = router;
+export default router;

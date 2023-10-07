@@ -1,8 +1,8 @@
-const expect = require("chai").expect;
-const sinon = require("sinon");
+import { expect } from "chai";
+import sinon from 'sinon';
 
-const User = require("../models/user");
-const authController = require("../controllers/auth");
+import User from "../models/user.js";
+import { signup, login} from '../controllers/auth.js'
 
 describe("Auth controller - Login", function () {
   it("should throw an error with code 500 if accessing the database fails", function (done) {
@@ -16,7 +16,7 @@ describe("Auth controller - Login", function () {
       },
     };
 
-    authController.login(req, {}, () => {})
+    login(req, {}, () => {})
       .then((result) => {
         expect(result).to.be.an("error");
         expect(result).to.have.property("statusCode", 500);

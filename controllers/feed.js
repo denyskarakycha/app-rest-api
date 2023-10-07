@@ -1,11 +1,18 @@
-const { validationResult } = require("express-validator");
-const fileHelper = require("../util/file");
-const io = require("../socket.js");
+import { validationResult } from "express-validator";
+import deleteFile from "../util/file.js";
+import webSocket from '../socket.js';
 
-const Post = require("../models/post.js");
-const User = require("../models/user.js");
 
-exports.getPosts = async (req, res, next) => {
+import Post from "../models/post.js";
+import User from "../models/user.js";
+// const { validationResult } = require("express-validator");
+// const fileHelper = require("../util/file");
+// const io = require("../socket.js");
+
+// const Post = require("../models/post.js");
+// const User = require("../models/user.js");
+
+export const getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 2;
   try {
@@ -28,7 +35,7 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
-exports.createPost = async (req, res, next) => {
+export const createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed!");
@@ -57,7 +64,7 @@ exports.createPost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     const savedUser = await user.save();
-    io.getIO().emit("posts", {
+    webSocket.getIO().emit("posts", {
       action: "create",
       post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
     });
@@ -78,7 +85,7 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
-exports.getPost = async (req, res, next) => {
+export const getPost = async (req, res, next) => {
   const postId = req.params.postId;
   try {
     const post = await Post.findById(postId);
@@ -100,7 +107,7 @@ exports.getPost = async (req, res, next) => {
   }
 };
 
-exports.updatePost = async (req, res, next) => {
+export const updatePost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed!");
@@ -135,7 +142,7 @@ exports.updatePost = async (req, res, next) => {
       throw error;
     }
     if (updateImageUrl !== post.imageUrl) {
-      fileHelper.deleteFile(post.imageUrl);
+      deleteFile(post.imageUrl);
     }
 
     post.title = updateTitle;
@@ -144,7 +151,7 @@ exports.updatePost = async (req, res, next) => {
 
     const result = await post.save();
 
-    io.getIO().emit('posts', {
+    webSocket.getIO().emit('posts', {
       action: 'update',
       post: result
     })
@@ -161,7 +168,7 @@ exports.updatePost = async (req, res, next) => {
   }
 };
 
-exports.deletePost = async (req, res, next) => {
+export const deletePost = async (req, res, next) => {
   const postId = req.params.postId;
 
   try {
@@ -176,14 +183,14 @@ exports.deletePost = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
-    fileHelper.deleteFile(post.imageUrl);
+    deleteFile(post.imageUrl);
     await Post.findByIdAndRemove(postId);
 
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     await user.save();
 
-    io.getIO().emit('posts', {
+    webSocket.getIO().emit('posts', {
       action: 'delete',
       post: postId
     });
@@ -198,7 +205,7 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-exports.getStatus = async (req, res, next) => {
+export const getStatus = async (req, res, next) => {
   const userId = req.userId;
   try {
     const user = await User.findById(userId);
@@ -219,7 +226,7 @@ exports.getStatus = async (req, res, next) => {
   }
 };
 
-exports.updateStatus = async (req, res, next) => {
+export const updateStatus = async (req, res, next) => {
   const userId = req.userId;
   const updateStatus = req.body.status;
 
