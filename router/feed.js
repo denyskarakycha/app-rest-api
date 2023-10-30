@@ -18,7 +18,7 @@ import isAuth from '../middleware/is-auth.js'
 
 const router = Router();
 // GET /feed/posts
-router.get('/posts', isAuth, getPosts);
+router.get('/posts',   getPosts);
 
 // POST /feed/post
 router.post('/post', isAuth, [
@@ -26,7 +26,7 @@ router.post('/post', isAuth, [
     body('content').trim().isLength({min: 5})
 ], createPost);
 
-router.get('/post/:postId', getPost);
+router.get('/post/:postId', isAuth, getPost);
 
 // PUT
 router.put('/post/:postId', isAuth, [

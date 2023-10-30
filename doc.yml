@@ -1,0 +1,102 @@
+openapi: '3.0.0'
+info:
+  title: Library API
+  version: '1.0.0'
+servers:
+   - url: http://localhost:3000
+paths:
+  /feed/posts:
+    get:
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Posts'
+components:
+     schemas:
+       User:
+         type: object
+         required:
+           - email
+           - password
+           - name
+         properties:
+           id:
+             type: string
+             description: The auto-generated ID
+           email:
+             type: string
+           password:
+             type: string
+           name:
+             type: string
+           status:
+             type: string
+             description: Default value "I am new!"
+           posts:
+             type: array
+             items:
+               type: object
+               properties:
+                 _id:
+                   type: string
+                   description: The auto-generated ID
+         example:
+           _id: 652138ab8a9c23e6d2138b3c
+           email: 'test@gmail.com'
+           password: $2a$12$tma3gwl9Hx.QoYIJHMA7ROa5OQNPGk8QwNyDbtvUWt8IUUELtBUc.
+           name: Denys
+           status: 'I am new!'
+           posts:  [ 6521394c8a9c23e6d2138b41 ]
+       Post:
+        type: object
+        required:
+          - "title"
+          - "imageUrl"
+          - "content"
+          - "creator"
+        properties:
+          _id:
+            type: string
+            description: The auto-generated ID
+            example: "6521394c8a9c23e6d2138b41"
+          title:
+            type: string
+            example: "Good day"
+          imageUrl:
+            type: string
+            example: "images/af53a534-72a0-476d-8c1f-eecf7032d9cd"
+          content: 
+            type: string
+            example: "Today a good day"
+          creator:
+            type: object
+            $ref: "#/components/schemas/User"
+          createdAt: 
+            type: string
+            example: "2023-10-07T10:56:12.953Z"
+          updatedAt:
+            type: string
+            example:  "2023-10-07T10:56:12.953Z"    
+       Posts:
+        type: object
+        properties:
+          posts:
+            type: array
+            items: 
+              $ref: "#/components/schemas/Post"
+          totalItems:
+            type: integer
+            example: 1
+
+
+
+            
+        
+
+
+          

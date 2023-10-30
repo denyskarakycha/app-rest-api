@@ -5,20 +5,16 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+import swaggerUI from 'swagger-ui-express';
+import swaggerJSDoc from 'swagger-jsdoc';
 
 import feedRoutes from './router/feed.js';
 import authRoutes from './router/auth.js';
 
+import { get404 } from './controllers/error.js'
+
 import webSocket from './socket.js';
 
-// const express = require('express');
-// const bodyParser = require('body-parser');
-// const mongoose = require('mongoose');
-// const path = require('path');
-// const multer = require('multer');
-// const { v4: uuidv4 } = require('uuid');
-// const feedRoutes = require('./router/feed.js');
-// const authRoutes = require('./router/auth.js');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -26,7 +22,29 @@ const __dirname = dirname(__filename);
 const MONGODB_URI =
   "mongodb+srv://denys:295q6722822@cluster0.fk2cpgo.mongodb.net/messages?retryWrites=true&w=majority";
 
+const option = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Library API",
+            version: "1.0.0",
+            description: "Messages API"
+        },
+        servers: [
+            {
+                url: "http://localhost:8080"
+            }
+        ],
+    },
+    apis: ["./documentation/*.js"]
+   // apis: ["./router/*.js", "./controllers/*.js", "./models/*js"]
+}
+
+const specs = swaggerJSDoc(option);
+
 const app = express();
+
+ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 const fileStorage = multer.diskStorage({
     destination: function(req, file, cb) {
@@ -61,11 +79,13 @@ app.use((req, res, next)=> {
 app.use('/feed', feedRoutes); 
 app.use('/auth', authRoutes); 
 
+app.use(get404);
+
 app.use((error, req, res, next) => {
-    console.log(error);
-    const status = error.statusCode;
-    const message = error.message;
-    const data = error.data;
+    console.log(1);
+    const status = error.statusCode || 404;
+    const message = error.message || "Not found!";
+    const data = error.data || "Invalid router";
     res.status(status).json({message: message, data: data});
 });
 

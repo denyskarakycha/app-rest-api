@@ -25,7 +25,7 @@ export const getPosts = async (req, res, next) => {
 
     res.status(200).json({
       posts: posts,
-      totalItems: totalItems,
+      totalItems: postsTest,
     });
   } catch (error) {
     if (!error.statusCode) {
